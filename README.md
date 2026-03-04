@@ -2,4 +2,6 @@ The script Build_ABC_refTable.py generates the reference tables required for ABC
 1.	The demographic parameters used for the simulation
 2.	A set of population genetic summary statistics computed from the simulated data
 These reference tables are then used as training datasets for ABC-Random Forest (ABC-RF) analyses or other ABC approaches.
-The simulations are performed using msprime, a fast coalescent simulator that efficiently generates genealogical trees and mutations. The script supports three demographic models representing different spatial population histories and patterns of gene flow.
+The simulations are performed using msprime, a fast coalescent simulator that efficiently generates genealogical trees and mutations. The script supports three demographic mteapopulation models representing different spatial population histories and patterns of gene flow.
+
+An indepth guide to use Build_ABC_refTable.py to generate simulations under the three main demographic scenarios is provided. 
