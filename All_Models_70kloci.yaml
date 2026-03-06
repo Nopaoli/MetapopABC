@@ -1,0 +1,113 @@
+# =========================
+# ABC reference table config 
+# =========================
+
+# ---- Core simulation design ----
+mu: 1.9e-8              # [REQUIRED] Mutation rate per bp per generation (float)
+recomb_rate: 0.0        # NEW: Recombination per bp per generation (rho). Set >0 to enable recomb within loci.
+reps: 71500              # Number of independent loci per draw (int >=1)
+length: 70          # Base pairs per locus (float >0)
+seed: null              # Base RNG seed (int) or null for random
+from_sfs: false         # If true, compute ALL stats from SFS (no variances)
+variance: false         # If true (and from_sfs=false), compute across-locus variances (slower, larger outputs)
+no_singleton: false     # If true, drop MAC1 bin from folded 1D SFS outputs
+
+# ---- Parallelism ----
+jobs: 45                 # Number of worker processes (int >=1)
+workers: null           # Placeholder for future msprime num_threads (currently unused)
+
+# ---- Metapopulation sizes (deme counts) ----
+m1_n: 20                # Total demes in Model 1 (1D chain)
+m2_nl: 10               # Left demes in Models 2 & 3 (1D chain)
+m2_nr: 10               # Right demes in Models 2 & 3 (1D chain)
+
+# ---- Sampling (choose up to 5 demes per model) ----
+# Provide comma-separated labels:
+m1_pops: "P2,P14,P16"   # Sampled demes for Model 1
+m2_pops: "L5,R3,R6"     # Sampled demes for Models 2 & 3 (same sampling used for Model 3)
+
+# ---- Time priors ----
+prior_t1_min: 1.0e2     # T1 ~ Uniform[min, max]  (generations)
+prior_t1_max: 5.0e5
+
+# T2 and T3 are drawn as *fractions*, then mapped:
+t2_frac_min: 0.1        # lower bound for T2/T1 mapping
+t2_frac_max: 0.9        # upper bound for T2/T1 mapping
+t3_frac_min: 0.1        # lower bound for T3/min(T2L, T2R) mapping (Model 2 only)
+t3_frac_max: 0.9        # upper bound for T3/min(T2L, T2R) mapping
+
+t2_beta_alpha: 2.0      # Beta(alpha, beta) for T2 fractions
+t2_beta_beta: 1.0
+t3_beta_alpha: 3.0      # Beta(alpha, beta) for T3 fraction (Model 2 only)
+t3_beta_beta: 1.2
+
+# ---- Migration priors (probabilities in m-space) ----
+# use_loguniform_m: true
+# Symmetric nearest-neighbor migration within each 1D chain:
+# Model 1 (NEW keys for the new script):
+# m_neighbor1_min: 1.0e-5
+# m_neighbor1_max: 1.0e-1
+# Model 2 within chains (Left / Right):
+# m_neighborL_min: 1.0e-5
+# m_neighborL_max: 1.0e-1
+# m_neighborR_min: 1.0e-5
+# m_neighborR_max: 1.0e-1
+
+# ASYMMETRIC bridge (Model 2 only), L(last) -> R0 and R0 -> L(last) at T3:
+# m_bridge_L2R_min: 1.0e-6
+# m_bridge_L2R_max: 1.0e-2
+# m_bridge_R2L_min: 1.0e-6
+# m_bridge_R2L_max: 1.0e-2
+
+# ---- Optionally draw migration from Nem (expected number of migrants per generation) ----
+# If true, within-chain m for Model 1 and Model 2 are derived from Nem / Ne_deme (symmetric within each chain).
+draw_within_from_Nem: true
+use_loguniform_Nem: false
+# Model 1 within-chain Nem prior (if draw_within_from_Nem: true)
+Nem_neighbor1_min: 1
+Nem_neighbor1_max: 100
+
+# Model 2 within-chain Nem priors (if draw_within_from_Nem: true)
+Nem_neighborL_min: 1
+Nem_neighborL_max: 50
+Nem_neighborR_min: 1
+Nem_neighborR_max: 50
+
+# Bridge migration (Model 2) from Nem (per direction).
+# If true, bridge m are computed as Nem / Ne_destination; otherwise use m priors above.
+draw_bridge_from_Nem: true
+Nem_bridge_L2R_min: 1
+Nem_bridge_L2R_max: 25
+Nem_bridge_R2L_min: 1
+Nem_bridge_R2L_max: 25
+
+# Safety cap on migration probabilities (protects against tiny Ne with large Nem -> m>1)
+mig_cap: 0.25
+
+# ---- Effective population size (Ne) priors ----
+# Model 1
+prior_NeA_min: 1.0e2
+prior_NeA_max: 2.0e5
+prior_NeD1_min: 1.0e2
+prior_NeD1_max: 2.0e4
+
+# Models 2 & 3
+prior_NeA2_min: 1.0e2
+prior_NeA2_max: 2.0e5
+prior_NeLlin_min: 1.0e2     # Left lineage (before splitting into demes)
+prior_NeLlin_max: 2.0e5
+prior_NeRlin_min: 1.0e2     # Right lineage (before splitting into demes)
+prior_NeRlin_max: 2.0e5
+prior_NeDL_min: 1.0e2       # Left demes (after T2L)
+prior_NeDL_max: 2.0e4
+prior_NeDR_min: 1.0e2       # Right demes (after T2R)
+prior_NeDR_max: 2.0e4
+
+# ---- How many prior draws per model (rows) ----
+# Set to 0 to skip a model entirely.
+n_sims1: 10000           # Model 1
+n_sims2: 50000               # Model 2 (Secondary Contact)
+n_sims3: 10000               # Model 3 (No Secondary Contact)
+# ---- Output ----
+outdir: All_models_70kLoci  # If null, an auto-named folder is created under CWD
+
