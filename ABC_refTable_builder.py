@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 '''
 ABC reference-table generator for two 1D stepping-stone models in msprime.
-(Adds Model 3 = Model 2 without secondary contact.)
+
 
 - Model 1: ancestral -> N demes at T1; 1D stepping-stone migration.
 - Model 2 (SC): ancestral -> left/right at T1; left splits at T2L into nL demes,
           right splits at T2R into nR demes; 1D stepping-stone within lineages;
-          secondary contact L(last) <-> R0 from T3. (Now supports ASYMMETRIC bridge.)
+          secondary contact L(last) <-> R0 from T3. ( supports ASYMMETRIC bridge.)
 - Model 3 (NO-SC): same as Model 2 but NO secondary contact/bridge at any time.
 - Priors on times, Ne (ancestral, lineages, demes), migration either in m (probabilities)
   or in Nem (expected number of migrants per generation), as configured.
@@ -19,7 +19,7 @@ ABC reference-table generator for two 1D stepping-stone models in msprime.
     per pair: dXY, dA, FST (Hudson).
 - Two compute paths:
     from_sfs = False ? tskit stats (fast), optional across-locus variances
-    from_sfs = True  ? derive ALL stats from (J)SFS (no variances)
+    from_sfs = True  ? derive ALL stats from SFS (no variances)
 - Parallelism: process pool across prior draws (`jobs:` in config).
 - Outputs:
     outdir/
@@ -70,9 +70,6 @@ DEFAULTS = dict(
     # parallel rows
     jobs=1,              # processes across prior draws
 
-    # (legacy knob for future msprime versions; ignored by 1.3.4)
-    workers=None,        # would map to msprime num_threads if supported
-
     # deme counts
     m1_n=20,
     m2_nl=10,
@@ -84,9 +81,6 @@ DEFAULTS = dict(
 
     # time priors (T1 absolute)
     prior_t1_min=1e2,  prior_t1_max=1e6,
-    prior_t2L_min=1e2, prior_t2L_max=9e5,  # kept for backward-compat logging; not used now
-    prior_t2R_min=1e2, prior_t2R_max=9e5,  # kept for backward-compat logging; not used now
-    prior_t3_min=1e2,  prior_t3_max=5e5,   # kept for backward-compat logging; not used now
 
     # ---- fraction priors for T2 and T3 (Beta on [0,1] mapped to [min,max]) ----
     t2_frac_min=0.1,
